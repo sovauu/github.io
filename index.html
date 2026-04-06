@@ -90,7 +90,41 @@
   .tag { font-size: 9px; font-family: 'Press Start 2P', monospace; padding: 7px 12px; border: 1px solid #2a2a2a; color: #555; text-transform: uppercase; letter-spacing: 0.04em; }
   .tag.hot { border-color: var(--red); color: var(--red); }
   .tag.mid { border-color: #444; color: #777; }
+.about-video-wrap {
+  margin-top: 36px;
+  width: 100%;
+}
 
+.about-video-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.about-video-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.about-video-name {
+  font-size: 12px;
+  color: #777;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.about-video-wide {
+  width: 100%;
+  display: block;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  background: #111;
+  border: 1px solid #2a2a2a;
+}
   /* WORKS */
   #works { min-height: auto; padding-bottom: 80px; }
   .cat-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 32px; margin-bottom: 40px; }
@@ -209,11 +243,14 @@
         <span class="tag">рендер / 3D</span>
         <span class="tag">AI-аватары</span>
       </div>
-     <div class="about-video-wrap">
-  <div class="about-video-head">
-    <span class="about-video-label">проект</span>
-    <span class="about-video-name">партф</span>
-  </div>
+
+<div class="about-video-wrap full-width">
+  <video class="about-video-wide" autoplay muted loop playsinline preload="metadata">
+    <source src="partf.mp4" type="video/mp4">
+    Ваш браузер не поддерживает видео.
+  </video>
+</div>
+
     </div>
     <div class="fc bl"></div><div class="fc br"></div>
   </section>
