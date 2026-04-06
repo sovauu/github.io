@@ -575,6 +575,16 @@
       });
     });
   });
+<script>
+  const aboutVideo = document.querySelector('.about-video-wide');
+
+  if (aboutVideo) {
+    aboutVideo.muted = true;
+    aboutVideo.play().catch(() => {
+      console.log('Автовоспроизведение заблокировано браузером или файл не загрузился.');
+    });
+  }
+</script>
 </script>
 </body>
 </html>
