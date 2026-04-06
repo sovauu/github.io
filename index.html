@@ -184,6 +184,21 @@
     .works-grid { grid-template-columns: repeat(2,1fr); }
     .steps-grid  { grid-template-columns: repeat(2,1fr); }
   }
+.full-width {
+  grid-column: 1 / -1;
+  margin-left: -48px;
+  margin-right: -48px;
+}
+
+.about-video-wide {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  display: block;
+  border-top: 1px solid #1e1e1e;
+  border-bottom: 1px solid #1e1e1e;
+}
 </style>
 </head>
 <body>
@@ -245,7 +260,14 @@
       </div>
 
 <div class="about-video-wrap full-width">
-  <video class="about-video-wide" autoplay muted loop playsinline preload="metadata">
+  <video
+    class="about-video-wide"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+  >
     <source src="partf.mp4" type="video/mp4">
     Ваш браузер не поддерживает видео.
   </video>
