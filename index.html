@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOVA.UU</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #0a0a0a;
+    --red: #cc2200;
+    --white: #e8e2d9;
+    --lightgray: #888;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Courier Prime', monospace;
+    overflow-x: hidden;
+  }
+
+  /* FILM STRIPS */
+  .film-strip {
+    position: fixed; top: 0; width: 44px; height: 100vh;
+    background: #111; z-index: 100;
+    display: flex; flex-direction: column; align-items: center; padding: 8px 0;
+  }
+  .film-strip.left  { left: 0;  border-right: 2px solid #1a1a1a; }
+  .film-strip.right { right: 0; border-left:  2px solid #1a1a1a; }
+  .sprocket {
+    width: 22px; height: 16px; background: var(--black);
+    border: 2px solid #333; border-radius: 2px; margin: 6px 0; flex-shrink: 0;
+  }
+  .sprocket.red { background: var(--red); border-color: var(--red); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 44px; right: 44px; z-index: 50;
+    background: rgba(10,10,10,0.96); border-bottom: 1px solid #222;
+    padding: 12px 32px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: 'Press Start 2P', monospace; font-size: 12px; color: var(--white); text-decoration: none; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: var(--lightgray); text-decoration: none; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--red); }
+
+  .film-wrap { padding: 0 52px; }
+
+  section { min-height: 100vh; padding: 100px 48px 80px; position: relative; }
+  section + section { border-top: 1px solid #1e1e1e; }
+
+  /* CORNERS */
+  .fc { position: absolute; width: 20px; height: 20px; border-color: var(--red); border-style: solid; opacity: 0.4; }
+  .fc.tl { top: 24px;    left: 24px;  border-width: 2px 0 0 2px; }
+  .fc.tr { top: 24px;    right: 24px; border-width: 2px 2px 0 0; }
+  .fc.bl { bottom: 24px; left: 24px;  border-width: 0 0 2px 2px; }
+  .fc.br { bottom: 24px; right: 24px; border-width: 0 2px 2px 0; }
+
+  .section-label {
+    font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--red);
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after { content: ''; display: block; height: 1px; background: var(--red); flex: 1; opacity: 0.25; }
+
+  /* HERO */
+  #hero { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .hero-sub { font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--red); letter-spacing: 0.05em; margin-bottom: 24px; }
+  .hero-title { font-family: 'Press Start 2P', monospace; font-size: clamp(28px, 4vw, 56px); line-height: 1.2; color: var(--white); margin-bottom: 32px; }
+  .hero-bio { font-size: 15px; line-height: 1.9; color: #bbb; max-width: 480px; margin-bottom: 40px; border-left: 2px solid var(--red); padding-left: 20px; }
+  .hero-bio strong { color: var(--white); font-weight: 700; }
+  .cta-btn {
+    display: inline-block; font-family: 'Press Start 2P', monospace; font-size: 9px;
+    color: var(--white); border: 2px solid var(--white); padding: 14px 24px;
+    text-decoration: none; letter-spacing: 0.05em; transition: all 0.2s;
+  }
+  .cta-btn:hover { background: var(--red); border-color: var(--red); transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--white); }
+  .hero-photo { width: 100%; aspect-ratio: 4/3; object-fit: cover; object-position: center top; display: block; border: 1px solid #2a2a2a; filter: contrast(1.05) saturate(0.88); }
+
+  /* ABOUT */
+  #about { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: start; }
+  .about-num { font-family: 'Press Start 2P', monospace; font-size: 72px; color: #1a1a1a; line-height: 1; user-select: none; }
+  .about-role { font-family: 'Press Start 2P', monospace; font-size: clamp(11px,1.3vw,14px); line-height: 1.9; color: var(--white); margin-bottom: 28px; border-left: 2px solid var(--red); padding-left: 20px; }
+  .about-body { font-size: 15px; line-height: 2; color: #999; }
+  .about-body p + p { margin-top: 16px; }
+  .about-body strong { color: var(--white); font-weight: 700; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; }
+  .tag { font-size: 9px; font-family: 'Press Start 2P', monospace; padding: 7px 12px; border: 1px solid #2a2a2a; color: #555; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tag.hot { border-color: var(--red); color: var(--red); }
+  .tag.mid { border-color: #444; color: #777; }
+
+  /* WORKS */
+  #works { min-height: auto; padding-bottom: 80px; }
+  .cat-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 32px; margin-bottom: 40px; }
+  .cat-btn { font-size: 9px; font-family: 'Press Start 2P', monospace; padding: 8px 16px; border: 1px solid #333; color: #555; background: none; cursor: pointer; text-transform: uppercase; transition: all 0.15s; }
+  .cat-btn:hover, .cat-btn.active { border-color: var(--white); color: var(--white); }
+  .works-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; }
+  .work-card { background: #0d0d0d; border: 1px solid #1a1a1a; cursor: pointer; transition: border-color 0.2s; overflow: hidden; }
+  .work-card:hover { border-color: var(--red); }
+  .work-card:hover .work-overlay { opacity: 1; }
+  .work-card.hidden { display: none; }
+  .work-thumb { width: 100%; aspect-ratio: 16/10; position: relative; overflow: hidden; background: #111; }
+  .work-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+  .work-card:hover .work-thumb img { transform: scale(1.04); }
+  .work-overlay { position: absolute; inset: 0; background: rgba(204,34,0,0.18); opacity: 0; transition: opacity 0.2s; }
+  .work-info { padding: 10px 12px 14px; }
+  .work-type { font-size: 8px; font-family: 'Press Start 2P', monospace; color: var(--red); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .work-name { font-size: 11px; color: #aaa; line-height: 1.4; }
+
+  /* PROCESS */
+  #process { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .process-list { display: flex; flex-direction: column; gap: 32px; }
+  .stmt { position: relative; padding-left: 24px; }
+  .stmt::before { content: ''; position: absolute; left: 0; top: 7px; width: 8px; height: 8px; background: var(--red); }
+  .stmt-text { font-size: 16px; line-height: 1.7; color: var(--white); }
+  .stmt-sub  { font-size: 12px; color: var(--lightgray); margin-top: 4px; line-height: 1.6; }
+  .process-deco { display: flex; align-items: center; justify-content: center; opacity: 0.6; }
+
+  /* STEPS */
+  #steps { min-height: auto; }
+  .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin-top: 40px; }
+  .step { background: #0d0d0d; border: 1px solid #1e1e1e; padding: 32px 24px; }
+  .step-num { font-family: 'Press Start 2P', monospace; font-size: 36px; color: #1e1e1e; line-height: 1; margin-bottom: 16px; }
+  .step-title { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--red); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+  .step-text { font-size: 12px; color: #666; line-height: 1.8; }
+
+  /* CONTACT */
+  #contact { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 28px; }
+  .contact-big { font-family: 'Press Start 2P', monospace; font-size: clamp(18px,3vw,36px); line-height: 1.6; color: var(--white); max-width: 700px; }
+  .contact-sub { font-size: 13px; color: #555; max-width: 420px; line-height: 1.9; letter-spacing: 0.04em; }
+  .contact-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .btn-primary { font-family: 'Press Start 2P', monospace; font-size: 9px; padding: 14px 28px; background: var(--red); color: var(--white); border: 2px solid var(--red); text-decoration: none; letter-spacing: 0.05em; transition: all 0.2s; }
+  .btn-primary:hover { background: none; color: var(--red); }
+  .btn-secondary { font-family: 'Press Start 2P', monospace; font-size: 9px; padding: 14px 28px; background: none; color: #888; border: 2px solid #333; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; }
+  .btn-secondary:hover { border-color: var(--white); color: var(--white); }
+
+  @media (max-width: 900px) {
+    .film-wrap { padding: 0 32px; }
+    .film-strip { width: 32px; }
+    nav { left: 32px; right: 32px; padding: 12px 16px; }
+    .nav-links { display: none; }
+    section { padding: 80px 20px 60px; }
+    #hero { grid-template-columns: 1fr; }
+    #about { grid-template-columns: 1fr; gap: 24px; }
+    .about-num { display: none; }
+    #process { grid-template-columns: 1fr; }
+    .process-deco { display: none; }
+    .works-grid { grid-template-columns: repeat(2,1fr); }
+    .steps-grid  { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="film-strip left"  id="strip-left"></div>
+<div class="film-strip right" id="strip-right"></div>
+
+<div class="film-wrap">
+
+  <nav>
+    <a href="#hero" class="nav-logo">SOVA.UU</a>
+    <ul class="nav-links">
+      <li><a href="#about">о себе</a></li>
+      <li><a href="#works">работы</a></li>
+      <li><a href="#process">как работаю</a></li>
+      <li><a href="#contact">контакт</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="fc tl"></div><div class="fc tr"></div>
+    <div>
+      <div class="hero-sub">портфолио</div>
+      <h1 class="hero-title">SOVA.UU</h1>
+      <div class="hero-bio">
+        Я — <strong>режиссёр нейропродакшна.</strong><br>
+        Разрабатываю видео и визуальные концепции с использованием AI — от идеи до финального результата.<br><br>
+       
+      </div>
+      <a href="#contact" class="cta-btn">написать</a>
+    </div>
+    <div>
+      <img class="hero-photo" src="photo.jpg" alt="sova.uu">
+    </div>
+    <div class="fc bl"></div><div class="fc br"></div>
+  </section>
+
+  <!-- О СЕБЕ -->
+  <section id="about">
+    <div class="fc tl"></div><div class="fc tr"></div>
+    <div><div class="about-num">01</div></div>
+    <div>
+      <div class="section-label">о себе</div>
+      <div class="about-role">Режиссёр нейропродакшна.<br>От концепции до финала.</div>
+      <div class="about-body">
+        <p>Разрабатываю видео и визуальные концепции с использованием AI — <strong>от идеи до финального результата.</strong></p>
+        <p>Работаю как режиссёр, а не оператор инструментов: формирую концепцию, собираю стиль, генерирую сцены и довожу до финального монтажа.</p>
+        <p>Также работаю в связке с дизайнерами — закрываю <strong>статичный AI-визуал</strong> и <strong>полный цикл видеопродакшна</strong> под задачи проекта.</p>
+      </div>
+      <div class="tags">
+        <span class="tag hot">нейропродакшн</span>
+        <span class="tag hot">AI-видео</span>
+        <span class="tag mid">статичный визуал</span>
+        <span class="tag mid">режиссура</span>
+        <span class="tag mid">монтаж</span>
+        <span class="tag">рендер / 3D</span>
+        <span class="tag">AI-аватары</span>
+      </div>
+    </div>
+    <div class="fc bl"></div><div class="fc br"></div>
+  </section>
+
+  <!-- РАБОТЫ -->
+  <!--
+  ═══════════════════════════════════════════════════
+  КАК ДОБАВЛЯТЬ РАБОТЫ:
+
+  Структура папки (всё рядом с HTML-файлом):
+    sova_uu_portfolio.html
+    photo.jpg               ← твоё фото
+    work_1.png              ← превью работы 1
+    work_2.png              ← превью работы 2
+    ...и т.д.
+
+  Для видео-превью: положи скрин/обложку рядом,
+  назови work_N.png. Ссылку на ютуб/вимео добавь
+  через data-url="https://..." на карточке —
+  потом сделаем лайтбокс если нужно.
+
+  Категории data-cat:
+    video   → AI-видео
+    avatar  → AI-аватары
+    static  → Статичный визуал
+    render  → Рендер/3D
+  ═══════════════════════════════════════════════════
+  -->
+  <section id="works">
+    <div class="fc tl"></div><div class="fc tr"></div>
+    <div class="section-label">что делаю</div>
+    <div class="cat-row">
+      <button class="cat-btn active" data-cat="all">все</button>
+      <button class="cat-btn" data-cat="video">AI-видео</button>
+      <button class="cat-btn" data-cat="avatar">AI-аватары</button>
+      <button class="cat-btn" data-cat="static">Статичный визуал</button>
+      <button class="cat-btn" data-cat="render">Рендер/3D</button>
+    </div>
+    <div class="works-grid">
+
+      <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="v pravde.png" alt="Сниппет — В правде сила">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">сниппет</div>
+          <div class="work-name">Ynni — В правде сила</div>
+        </div>
+      </div>
+
+      <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="stop.png" alt="Сниппет — Остановись">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">сниппет</div>
+          <div class="work-name">Shatrov — Остановись</div>
+        </div>
+      </div>
+
+      <div class="work-card" data-cat="static">
+        <div class="work-thumb">
+          <img src="aut.png" alt="Visual swap — Autentiments">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">visual swap</div>
+          <div class="work-name">Бренд одежды Autentiments</div>
+        </div>
+      </div>
+
+      <div class="work-card" data-cat="render">
+        <div class="work-thumb">
+          <img src="term.png" alt="Rendering — Terminals Unitodi">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">rendering</div>
+          <div class="work-name">Терминалы Unitodi</div>
+        </div>
+      </div>
+
+      <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="protokol.png" alt="Мульт-анимация">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">мульт-анимация</div>
+          <div class="work-name">Последний протокол</div>
+        </div>
+      </div>
+
+      <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="ball.png" alt="Self-initiated — Балет будущего">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">self-initiated</div>
+          <div class="work-name">Балет будущего</div>
+        </div>
+      </div>
+
+  <div class="work-card" data-cat="static">
+        <div class="work-thumb">
+          <img src="serf.png" alt="visual swap — Бренд серф-экипировки JOBE">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">visual swap</div>
+          <div class="work-name">Бренд серф-экипировки JOBE</div>
+        </div>
+      </div>
+
+  <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="hhhh.png" alt="visual swap — Бренд обуви HOVERS">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">visual swap</div>
+          <div class="work-name">Бренд обуви HOVERS</div>
+        </div>
+      </div>
+
+  <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="pusto.png" alt="Сниппет — V $ X V PRiNCE, BOLLO — «Пусто»">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">Сниппет</div>
+          <div class="work-name">V $ X V PRiNCE, BOLLO — «Пусто»</div>
+        </div>
+      </div>
+
+ <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="ng.png" alt="self-initiated — Новогодим">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">self-initiated</div>
+          <div class="work-name">Новогодим</div>
+        </div>
+      </div>
+
+ <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="blok.png" alt="self-initiated — sova_uu - Frozen Blocks X ">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">self-initiated</div>
+          <div class="work-name">sova_uu - Frozen Blocks X </div>
+        </div>
+      </div>
+
+ <div class="work-card" data-cat="video">
+        <div class="work-thumb">
+          <img src="mult.png" alt="Мульт-анимация — Союзмультфильму 90 лет">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">Мульт-анимация</div>
+          <div class="work-name">Союзмультфильму 90 лет</div>
+        </div>
+      </div>
+
+ <div class="work-card" data-cat="static">
+        <div class="work-thumb">
+          <img src="snowlove.png" alt="visual swap — snow/love">
+          <div class="work-overlay"></div>
+        </div>
+        <div class="work-info">
+          <div class="work-type">visual swap</div>
+          <div class="work-name">snow/love</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="fc bl"></div><div class="fc br"></div>
+  </section>
+
+  <!-- КАК РАБОТАЮ -->
+  <section id="process">
+    <div class="fc tl"></div><div class="fc tr"></div>
+    <div>
+      <div class="section-label">как работаю</div>
+      <div class="process-list">
+        <div class="stmt">
+          <div class="stmt-text">Стартуем с задачи, а не с инструмента</div>
+          <div class="stmt-sub">Я не предлагаю “сделать что-то через AI”.
+Мы сначала фиксируем задачу, контекст и требования к результату.
+
+Это позволяет избежать лишних итераций и сразу двигаться в нужную сторону.</div>
+        </div>
+        <div class="stmt">
+          <div class="stmt-text">Работаю внутри команды или процесса</div>
+          <div class="stmt-sub">Подключаюсь к текущему пайплайну: дизайн, маркетинг, продакшн.
+
+Важно не просто сделать визуал,
+а встроить его в систему, где он будет использоваться дальше.</div>
+        </div>
+        <div class="stmt">
+          <div class="stmt-text">Контролируемый результат</div>
+          <div class="stmt-sub">Работа строится не на случайных генерациях,
+а на точном попадании в заданную задачу.
+
+Результат воспроизводим и масштабируем:
+его можно использовать в рамках проекта без пересборки под каждую новую задачу.</div>
+        </div>
+        <div class="stmt">
+          <div class="stmt-text">Процесс важнее разового результата</div>
+          <div class="stmt-sub">Работа выстраивается так, чтобы решения можно было масштабировать:под новые носители; под новые задачи; под рост проекта.
+
+Это снижает зависимость от разовых решений и ускоряет дальнейшую работу.</div>
+        </div>
+      </div>
+    </div>
+    <div class="process-deco">
+      <svg width="280" height="280" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="140,30 178,110 140,150 102,110" fill="#00aa55" opacity="0.12"/>
+        <polygon points="140,150 178,110 140,210"         fill="#008844" opacity="0.09"/>
+        <polygon points="140,30 178,110 140,150 102,110" fill="none" stroke="#00cc66" stroke-width="1" opacity="0.25"/>
+        <polygon points="140,150 178,110 140,210"         fill="none" stroke="#009944" stroke-width="1" opacity="0.2"/>
+        <line x1="0" y1="140" x2="280" y2="140" stroke="#1c1c1c" stroke-width="1"/>
+        <line x1="140" y1="0" x2="140" y2="280" stroke="#1c1c1c" stroke-width="1"/>
+        <rect x="130" y="130" width="20" height="20" fill="none" stroke="#cc2200" stroke-width="1" opacity="0.35"/>
+        <text x="8" y="18"  fill="#1e1e1e" font-family="monospace" font-size="8">frame_003</text>
+        <text x="8" y="272" fill="#1e1e1e" font-family="monospace" font-size="8">sova.uu</text>
+      </svg>
+    </div>
+    <div class="fc bl"></div><div class="fc br"></div>
+  </section>
+
+  <!-- ЭТАПЫ -->
+  <section id="steps" style="min-height:auto;">
+    <div class="section-label">этапы</div>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">бриф</div>
+        <div class="step-text">задача, референсы, бюджет, сроки</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">концепт</div>
+        <div class="step-text">несколько направлений, выбираем одно</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">продакшн</div>
+        <div class="step-text">генерация, доработка, итерации по необходимости</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">сдача</div>
+        <div class="step-text">финальные файлы в нужных форматах</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- КОНТАКТ -->
+  <section id="contact">
+    <div class="fc tl"></div><div class="fc tr"></div>
+    <div class="contact-big">от идеи до готового<br>AI-визуала и видео</div>
+    <p class="contact-sub">концепт, сценарий, стиль, генерация, сборка, финал</p>
+    <div class="contact-btns">
+      <a href="https://t.me/" class="btn-primary">написать в тг</a>
+      <button class="btn-secondary">рассчитать стоимость</button>
+    </div>
+    <div class="fc bl"></div><div class="fc br"></div>
+  </section>
+
+</div>
+
+<script>
+  function fillStrip(el) {
+    const n = Math.floor(window.innerHeight / 32);
+    el.innerHTML = Array.from({length:n},(_,i)=>
+      `<div class="sprocket${i%5===2?' red':''}"></div>`
+    ).join('');
+  }
+  ['strip-left','strip-right'].forEach(id => fillStrip(document.getElementById(id)));
+  window.addEventListener('resize', () =>
+    ['strip-left','strip-right'].forEach(id => fillStrip(document.getElementById(id)))
+  );
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.work-card').forEach(card => {
+        card.classList.toggle('hidden', cat !== 'all' && card.dataset.cat !== cat);
+      });
+    });
+  });
+</script>
+</body>
+</html>
