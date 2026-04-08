@@ -90,6 +90,21 @@
   .tag { font-size: 9px; font-family: 'Press Start 2P', monospace; padding: 7px 12px; border: 1px solid #2a2a2a; color: #555; text-transform: uppercase; letter-spacing: 0.04em; }
   .tag.hot { border-color: var(--red); color: var(--red); }
   .tag.mid { border-color: #444; color: #777; }
+ .about-video-wrap {
+  width: 100%;
+  margin-top: 40px;
+  border: 1px solid #1e1e1e;
+  background: #0d0d0d;
+  overflow: hidden;
+}
+
+.about-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
 
   /* WORKS */
   #works { min-height: auto; padding-bottom: 80px; }
@@ -145,6 +160,9 @@
     #hero { grid-template-columns: 1fr; }
     #about { grid-template-columns: 1fr; gap: 24px; }
     .about-num { display: none; }
+   .about-video-wrap {
+  margin-top: 28px;
+}
     #process { grid-template-columns: 1fr; }
     .process-deco { display: none; }
     .works-grid { grid-template-columns: repeat(2,1fr); }
@@ -209,6 +227,12 @@
         <span class="tag">рендер / 3D</span>
         <span class="tag">AI-аватары</span>
       </div>
+     <div class="about-video-wrap">
+  <video class="about-video" autoplay loop muted playsinline preload="auto">
+    <source src="партф.mp4" type="video/mp4">
+    Ваш браузер не поддерживает видео.
+  </video>
+</div>
     </div>
     <div class="fc bl"></div><div class="fc br"></div>
   </section>
