@@ -118,6 +118,12 @@
   .work-card.hidden { display: none; }
   .work-thumb { width: 100%; aspect-ratio: 16/10; position: relative; overflow: hidden; background: #111; }
   .work-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+ .work-thumb { width: 100%; aspect-ratio: 16/10; position: relative; overflow: hidden; background: #111; }
+.work-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.35s ease, transform 0.35s ease; }
+.work-thumb .cover-sims { opacity: 1; z-index: 1; }
+.work-thumb .cover-real { opacity: 0; z-index: 2; }
+.work-card:hover .work-thumb .cover-sims { opacity: 0; transform: scale(1.02);}
+.work-card:hover .work-thumb .cover-real { opacity: 1; transform: scale(1.02);}
   .work-card:hover .work-thumb img { transform: scale(1.04); }
   .work-overlay { position: absolute; inset: 0; background: rgba(204,34,0,0.18); opacity: 0; transition: opacity 0.2s; }
   .work-info { padding: 10px 12px 14px; }
@@ -275,9 +281,10 @@
 
       <div class="work-card" data-cat="video">
         <div class="work-thumb">
-          <img src="v pravde.png" alt="Сниппет — В правде сила">
-          <div class="work-overlay"></div>
-        </div>
+  <img class="cover-sims" src="v pravde.png" alt="Сниппет — В правде сила">
+  <img class="cover-real" src="1-1.png" alt="Реальная обложка — В правде сила">
+  <div class="work-overlay"></div>
+</div>
         <div class="work-info">
           <div class="work-type">сниппет</div>
           <div class="work-name">Ynni — В правде сила</div>
